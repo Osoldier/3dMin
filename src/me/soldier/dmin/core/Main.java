@@ -8,12 +8,13 @@ import java.nio.*;
 
 import me.soldier.dmin.rendering.*;
 
+import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
 public class Main implements Runnable {
 
-	//BASE
+	// BASE
 	public static int width = 1600;
 	public static int height = 900;
 
@@ -23,18 +24,23 @@ public class Main implements Runnable {
 	private long window;
 	// FIX Callback ClosureError;
 	private GLFWKeyCallback keyCallback;
-	
-	//BASE
+	private GLFWWindowSizeCallback sizeCallback;
+	private GLFWMouseButtonCallback mouseCallback;
+
+	// BASE
 	public void start() {
 		running = true;
 		thread = new Thread(this, "Game");
 		thread.start();
 	}
-	
+
 	Cube cube;
-	ProjectionMatrix pr_matrix;
+	Grid grid;
+	Camera camera;
+	public static ProjectionMatrix pr_matrix;
 	public static Shader shapeShader;
-	
+	public static Shader gridShader;
+
 	private void init() {
 		if (glfwInit() != GL_TRUE) {
 			System.err.println("Could not initialize GLFW!");
@@ -48,31 +54,48 @@ public class Main implements Runnable {
 			return;
 		}
 
-		//Init window
+		// Init window
 		ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		glfwSetWindowPos(window, (GLFWvidmode.width(vidmode) - width) / 2, (GLFWvidmode.height(vidmode) - height) / 2);
 
 		glfwSetKeyCallback(window, keyCallback = new Input());
+		glfwSetWindowSizeCallback(window, sizeCallback = new ResizeHandler());
+		glfwSetMouseButtonCallback(window, mouseCallback = new MouseHandler());
 		glfwMakeContextCurrent(window);
 		glfwWindowHint(GLFW_REFRESH_RATE, 1500);
 		glfwSwapInterval(0);
 		glfwShowWindow(window);
-		
+
 		GLContext.createFromCurrent();
 		System.out.println("OpenGL: " + glGetString(GL_VERSION));
 
-		//init shaders
-		pr_matrix = new ProjectionMatrix(60, 1280.0f/720.0f, 0.001f, 100f);
-//		pr_matrix = new ProjectionMatrix(-10, 10, -10, 10, -10, 10);
+		glEnable(GL_LIGHTING);
+		glEnable(GL_LIGHT0);
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+
+		// init shaders
+		camera = new Camera(0, 0, 0);
+		pr_matrix = new ProjectionMatrix(45, 1280.0f / 720.0f, 0.001f, 100f);
+		// pr_matrix = new ProjectionMatrix(-10, 10, -10, 10, -10, 10);
 		System.out.println(pr_matrix);
 		shapeShader = new Shader("shape.vert", "shape.frag");
 		shapeShader.setUniformMat4f("pr_matrix", pr_matrix);
-		
-		//legacy working
-//		glMatrixMode(GL_PROJECTION);
-//		glOrtho(-10, 10, -10, 10, -10, 10);
-//		glMatrixMode(GL_MODELVIEW);
+
+		gridShader = new Shader("grid.vert", "grid.frag");
+		gridShader.setUniformMat4f("pr_matrix", pr_matrix);
+
+		camera.UpdatableShaders.add(gridShader);
+		camera.UpdatableShaders.add(shapeShader);
+		// legacy working
+		// glMatrixMode(GL_PROJECTION);
+		// glOrtho(-10, 10, -10, 10, -10, 10);
+		// glMatrixMode(GL_MODELVIEW);
 		cube = new Cube();
+		grid = new Grid();
 	}
 
 	public void run() {
@@ -105,24 +128,69 @@ public class Main implements Runnable {
 				running = false;
 		}
 		keyCallback.release();
+		sizeCallback.release();
+		mouseCallback.release();
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}
-	
+
 	private void render() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		camera.lookThrough();
 		cube.Render();
+		grid.Render();
 		int error = glGetError();
 		if (error != GL_NO_ERROR)
 			System.out.println("Error " + error);
 		glfwSwapBuffers(window);
 	}
+
+	float speed = 0.3f;
+
+	DoubleBuffer x = BufferUtils.createDoubleBuffer(1);
+	DoubleBuffer y = BufferUtils.createDoubleBuffer(1);
+	double newX, newY, prevX, prevY;
+
 	private void update() {
 		glfwPollEvents();
+		if (Input.isKeyDown(GLFW_KEY_W)) {
+			camera.walkForward(speed);
+		}
+		if (Input.isKeyDown(GLFW_KEY_S)) {
+			camera.walkBackwards(speed);
+		}
+		if (Input.isKeyDown(GLFW_KEY_A)) {
+			camera.strafeLeft(speed);
+		}
+		if (Input.isKeyDown(GLFW_KEY_D)) {
+			camera.strafeRight(speed);
+		}
+
+		if (MouseHandler.isButtonDown(0)) {
+			glfwGetCursorPos(window, x, y);
+
+			newX = x.get(0);
+			newY = y.get(0);
+
+			double deltaX = newX - prevX;
+			double deltaY = newY - prevY;
+
+			boolean rotX = newX != prevX;
+			boolean rotY = newY != prevY;
+
+			camera.yaw((float) (deltaX) * 0.1f);
+			camera.pitch((float) (deltaY) * 0.1f);
+
+			prevX = newX;
+			prevY = newY;
+		} else {
+			glfwGetCursorPos(window, x, y);
+
+			prevX = x.get(0);
+			prevY = y.get(0);
+		}
 		cube.Update();
 	}
-
-	
 
 	public static void main(String[] args) {
 		new Main().start();

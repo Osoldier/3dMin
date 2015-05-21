@@ -1,7 +1,6 @@
 #version 120
 
 attribute vec3 vertex;
-attribute vec3 normal;
 
 uniform mat4 ml_matrix;
 uniform mat4 vw_matrix;

@@ -75,12 +75,19 @@ public class Cube implements Shape {
 		ml_matrix.Rotate(angle, 1, 0, 0);
 		ml_matrix.Translate(new Vector3f(0, 0, -10));
 		Main.shapeShader.setUniformMat4f("ml_matrix", ml_matrix);
-
+		//Vertex
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(Main.shapeShader.getAttributeLocation("vertex"), 3, GL_FLOAT, false, 0, 0);
+		//Normal
+//		glBindBuffer(GL_ARRAY_BUFFER, normalBufferID);
+//		glEnableVertexAttribArray(1);
+//		glVertexAttribPointer(Main.shapeShader.getAttributeLocation("normal"), 3, GL_FLOAT, false, 0, 0);
+		//Index
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBufferID);
-		glDrawElements(GL_TRIANGLES, elementCount, GL_UNSIGNED_INT, 0);		
+		glDrawElements(GL_TRIANGLES, elementCount, GL_UNSIGNED_INT, 0);	
+		
+		Main.shapeShader.releaseShader();
 	}
 
 	public void Update() {
