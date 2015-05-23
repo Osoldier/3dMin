@@ -2,6 +2,8 @@ package me.soldier.dmin.core;
 
 import java.util.*;
 
+import me.soldier.dmin.math.*;
+
 /**
  * @author Osoldier
  * @since 28 janv. 2015
@@ -28,32 +30,32 @@ public class Camera {
 		pitch += amount;
 	}
 
-	public void walkForward(float distance) {
+	public void Forward(float distance) {
 		position.x -= distance * (float) Math.sin(Math.toRadians(yaw));
-		position.z += distance * (float) Math.cos(Math.toRadians(yaw));
-	}
-
-	public void walkBackwards(float distance) {
-		position.x += distance * (float) Math.sin(Math.toRadians(yaw));
 		position.z -= distance * (float) Math.cos(Math.toRadians(yaw));
 	}
 
-	public void strafeLeft(float distance) {
-		position.x -= distance * (float) Math.sin(Math.toRadians(yaw - 90));
+	public void Backwards(float distance) {
+		position.x += distance * (float) Math.sin(Math.toRadians(yaw));
+		position.z += distance * (float) Math.cos(Math.toRadians(yaw));
+	}
+
+	public void Left(float distance) {
+		position.x += distance * (float) Math.sin(Math.toRadians(yaw - 90));
 		position.z += distance * (float) Math.cos(Math.toRadians(yaw - 90));
 	}
 
-	public void strafeRight(float distance) {
-		position.x -= distance * (float) Math.sin(Math.toRadians(yaw + 90));
+	public void Right(float distance) {
+		position.x += distance * (float) Math.sin(Math.toRadians(yaw + 90));
 		position.z += distance * (float) Math.cos(Math.toRadians(yaw + 90));
 	}
-
-	public void strafeUp(float distance) {
-		position.y += distance;
+	
+	public void Up(float distance) {
+		position.y -= distance;
 	}
 	
-	public void strafeDown(float distance) {
-		position.y -= distance;
+	public void Down(float distance) {
+		position.y += distance;
 	}
 	
 	public void lookThrough() {

@@ -6,6 +6,8 @@ import static org.lwjgl.opengl.GL32.*;
 
 import java.io.*;
 
+import me.soldier.dmin.math.*;
+
 /**
  * @author Osoldier
  * @Project OSEngine
@@ -14,8 +16,7 @@ import java.io.*;
 public final class Shader {
 
 	private int program;
-	private boolean used = false;
-
+	
 	public Shader(String pVertexShader, String pFragmentShader) {
 		this(pVertexShader, pFragmentShader, null);
 	}
@@ -43,13 +44,10 @@ public final class Shader {
 	}
 
 	public void useShader() {
-		if (!used)
-			glUseProgram(program);
-		used = true;
+		glUseProgram(program);
 	}
 
 	public void releaseShader() {
-		used = false;
 		glUseProgram(0);
 	}
 
@@ -77,6 +75,12 @@ public final class Shader {
 	public void setUniform(String pName, int value) {
 		useShader();
 		glUniform1i(glGetUniformLocation(program, pName), value);
+		releaseShader();
+	}
+	
+	public void setUniform(String pName, boolean value) {
+		useShader();
+		glUniform1i(glGetUniformLocation(program, pName), value==true?1:0);
 		releaseShader();
 	}
 

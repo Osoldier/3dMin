@@ -3,11 +3,12 @@ package me.soldier.dmin.rendering;
 import java.nio.*;
 
 import me.soldier.dmin.core.*;
+import me.soldier.dmin.math.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 
-public class Cube implements Shape {
+public class Cube extends Shape {
 
 	int colorBufferID;
 	int normalBufferID;
@@ -63,16 +64,11 @@ public class Cube implements Shape {
 		initBuffers();
 	}
 
-	float angle = 0;
-
 	@Override
 	public void Render() {
 		Main.shapeShader.useShader();
 
 		ml_matrix.Identity();
-		ml_matrix.Rotate(angle, 0, 0, 1);
-		ml_matrix.Rotate(angle, 0, 1, 0);
-		ml_matrix.Rotate(angle, 1, 0, 0);
 		ml_matrix.Translate(new Vector3f(0, 0, -10));
 		Main.shapeShader.setUniformMat4f("ml_matrix", ml_matrix);
 		//Vertex
@@ -91,7 +87,7 @@ public class Cube implements Shape {
 	}
 
 	public void Update() {
-		angle+=1f;
+
 	}
 	
 	@Override

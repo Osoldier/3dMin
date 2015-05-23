@@ -1,4 +1,4 @@
-package me.soldier.dmin.core;
+package me.soldier.dmin.math;
 
 public class ModelMatrix extends Matrix4f {
 

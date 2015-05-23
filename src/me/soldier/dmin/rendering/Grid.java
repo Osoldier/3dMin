@@ -7,6 +7,7 @@ import static org.lwjgl.opengl.GL20.*;
 import java.nio.*;
 
 import me.soldier.dmin.core.*;
+import me.soldier.dmin.math.*;
 
 public class Grid {
 

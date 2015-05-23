@@ -6,7 +6,9 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 import java.nio.*;
 
+import me.soldier.dmin.math.*;
 import me.soldier.dmin.rendering.*;
+import me.soldier.dmin.world.*;
 
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
@@ -34,9 +36,9 @@ public class Main implements Runnable {
 		thread.start();
 	}
 
-	Cube cube;
+	World world;
 	Grid grid;
-	Camera camera;
+	public static Camera camera;
 	public static ProjectionMatrix pr_matrix;
 	public static Shader shapeShader;
 	public static Shader gridShader;
@@ -69,19 +71,18 @@ public class Main implements Runnable {
 		GLContext.createFromCurrent();
 		System.out.println("OpenGL: " + glGetString(GL_VERSION));
 
-		glEnable(GL_LIGHTING);
-		glEnable(GL_LIGHT0);
+//		glEnable(GL_LIGHTING);
+//		glEnable(GL_LIGHT0);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
+		glEnable(GL_TEXTURE_2D);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
 		// init shaders
 		camera = new Camera(0, 0, 0);
-		pr_matrix = new ProjectionMatrix(45, 1280.0f / 720.0f, 0.001f, 100f);
-		// pr_matrix = new ProjectionMatrix(-10, 10, -10, 10, -10, 10);
-		System.out.println(pr_matrix);
+		pr_matrix = new ProjectionMatrix(45, (float)width/(float)height, 0.001f, 200f);
 		shapeShader = new Shader("shape.vert", "shape.frag");
 		shapeShader.setUniformMat4f("pr_matrix", pr_matrix);
 
@@ -90,11 +91,8 @@ public class Main implements Runnable {
 
 		camera.UpdatableShaders.add(gridShader);
 		camera.UpdatableShaders.add(shapeShader);
-		// legacy working
-		// glMatrixMode(GL_PROJECTION);
-		// glOrtho(-10, 10, -10, 10, -10, 10);
-		// glMatrixMode(GL_MODELVIEW);
-		cube = new Cube();
+
+		world = new World();
 		grid = new Grid();
 	}
 
@@ -137,7 +135,7 @@ public class Main implements Runnable {
 	private void render() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		camera.lookThrough();
-		cube.Render();
+		world.Render();
 		grid.Render();
 		int error = glGetError();
 		if (error != GL_NO_ERROR)
@@ -147,25 +145,30 @@ public class Main implements Runnable {
 
 	float speed = 0.3f;
 
-	DoubleBuffer x = BufferUtils.createDoubleBuffer(1);
-	DoubleBuffer y = BufferUtils.createDoubleBuffer(1);
+	public static DoubleBuffer x = BufferUtils.createDoubleBuffer(1);
+	public static DoubleBuffer y = BufferUtils.createDoubleBuffer(1);
 	double newX, newY, prevX, prevY;
 
 	private void update() {
 		glfwPollEvents();
 		if (Input.isKeyDown(GLFW_KEY_W)) {
-			camera.walkForward(speed);
+			camera.Forward(speed);
 		}
 		if (Input.isKeyDown(GLFW_KEY_S)) {
-			camera.walkBackwards(speed);
+			camera.Backwards(speed);
 		}
 		if (Input.isKeyDown(GLFW_KEY_A)) {
-			camera.strafeLeft(speed);
+			camera.Left(speed);
 		}
 		if (Input.isKeyDown(GLFW_KEY_D)) {
-			camera.strafeRight(speed);
+			camera.Right(speed);
 		}
-
+		if (Input.isKeyDown(GLFW_KEY_LEFT_SHIFT)) {
+			camera.Up(speed);
+		}
+		if (Input.isKeyDown(GLFW_KEY_LEFT_CONTROL)) {
+			camera.Down(speed);
+		}
 		if (MouseHandler.isButtonDown(0)) {
 			glfwGetCursorPos(window, x, y);
 
@@ -174,9 +177,6 @@ public class Main implements Runnable {
 
 			double deltaX = newX - prevX;
 			double deltaY = newY - prevY;
-
-			boolean rotX = newX != prevX;
-			boolean rotY = newY != prevY;
 
 			camera.yaw((float) (deltaX) * 0.1f);
 			camera.pitch((float) (deltaY) * 0.1f);
@@ -189,7 +189,7 @@ public class Main implements Runnable {
 			prevX = x.get(0);
 			prevY = y.get(0);
 		}
-		cube.Update();
+		world.Update();
 	}
 
 	public static void main(String[] args) {
