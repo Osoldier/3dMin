@@ -8,6 +8,7 @@ import java.nio.*;
 
 import me.soldier.dmin.math.*;
 import me.soldier.dmin.rendering.*;
+import me.soldier.dmin.shaders.*;
 import me.soldier.dmin.world.*;
 
 import org.lwjgl.*;
@@ -21,9 +22,11 @@ public class Main implements Runnable {
 	public static int height = 900;
 
 	private Thread thread;
-	private boolean running = false;
+	private Thread thrTools;
+	public static boolean running = false;
 
 	private long window;
+	private ToolWindow toolWindow;
 	// FIX Callback ClosureError;
 	private GLFWKeyCallback keyCallback;
 	private GLFWWindowSizeCallback sizeCallback;
@@ -34,14 +37,16 @@ public class Main implements Runnable {
 		running = true;
 		thread = new Thread(this, "Game");
 		thread.start();
+		thrTools = new Thread(toolWindow = new ToolWindow(), "Tools");
+		thrTools.start();
 	}
 
 	World world;
 	Grid grid;
 	public static Camera camera;
 	public static ProjectionMatrix pr_matrix;
-	public static Shader shapeShader;
-	public static Shader gridShader;
+	public static ModelShader shapeShader;
+	public static GridShader gridShader;
 
 	private void init() {
 		if (glfwInit() != GL_TRUE) {
@@ -85,15 +90,14 @@ public class Main implements Runnable {
 		// init shaders
 		camera = new Camera(0, 0, 0);
 		pr_matrix = new ProjectionMatrix(45, (float)width/(float)height, 0.001f, 200f);
-		shapeShader = new Shader("shape.vert", "shape.frag");
-		shapeShader.setUniformMat4f("pr_matrix", pr_matrix);
+		shapeShader = new ModelShader("src/shaders/shape.vert", "src/shaders/shape.frag");
+		shapeShader.pr_matrix = pr_matrix;
+		shapeShader.vw_matrix = camera.vw_matrix;
 
-		gridShader = new Shader("grid.vert", "grid.frag");
-		gridShader.setUniformMat4f("pr_matrix", pr_matrix);
-
-		camera.UpdatableShaders.add(gridShader);
-		camera.UpdatableShaders.add(shapeShader);
-
+		gridShader = new GridShader();
+		gridShader.pr_matrix = pr_matrix;
+		gridShader.vw_matrix = camera.vw_matrix;
+		
 		world = new World();
 		grid = new Grid();
 	}
@@ -131,6 +135,7 @@ public class Main implements Runnable {
 		sizeCallback.release();
 		mouseCallback.release();
 		glfwDestroyWindow(window);
+		glfwDestroyWindow(toolWindow.window);
 		glfwTerminate();
 	}
 

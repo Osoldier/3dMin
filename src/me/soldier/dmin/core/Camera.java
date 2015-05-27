@@ -3,6 +3,7 @@ package me.soldier.dmin.core;
 import java.util.*;
 
 import me.soldier.dmin.math.*;
+import me.soldier.dmin.shaders.*;
 
 /**
  * @author Osoldier

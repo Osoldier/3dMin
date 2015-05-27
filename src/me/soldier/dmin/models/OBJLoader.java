@@ -7,7 +7,7 @@ import me.soldier.dmin.math.*;
 
 public class OBJLoader {
 
-	public static Model loadObjModel(String fileName, String texturefile, Loader loader) {
+	public static Model loadObjModel(String fileName, String texturefile) {
 		InputStream is = null;
 		ArrayList<Vector3f> vertices = new ArrayList<Vector3f>();
 		ArrayList<Vector2f> textures = new ArrayList<Vector2f>();
@@ -80,7 +80,7 @@ public class OBJLoader {
 		for (int i = 0; i < indices.size(); i++) {
 			indicesArray[i] = indices.get(i);
 		}
-		return loader.createModelVBO(verticesArray, normalsArray, textureArray, indicesArray, new Texture(texturefile));
+		return Loader.createModelVAO(verticesArray, normalsArray, textureArray, indicesArray, new Texture(texturefile));
 	}
 
 	private static void processVertex(String[] vertexData, ArrayList<Integer> indices, ArrayList<Vector2f> textures, ArrayList<Vector3f> normals, float[] texturesArray, float[] normalArray) {
