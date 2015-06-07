@@ -12,14 +12,14 @@ import me.soldier.dmin.rendering.*;
 
 public class Loader {
 	
-	public static Model createModelVAO(float[] pos, float[] normals, float[] tex, int[] indices, Texture t) {
+	public static Model createModelVAO(float[] pos, float[] normals, float[] tex, int[] indices) {
 		int vaoID = createVAO();
 		storeDataInAttributeList(0, 3, pos);
 		storeDataInAttributeList(2, 3, normals);
 		storeDataInAttributeList(3, 2, tex);
 		bindIndicesBuffer(indices);
 		unbindVAO();
-		return new Model(vaoID, indices.length, t);
+		return new Model(vaoID, indices.length);
 	}
 	
 	private static List<Integer> vaos = new ArrayList<Integer>();

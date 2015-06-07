@@ -8,7 +8,8 @@ public class ModelShader extends Shader {
 	public ProjectionMatrix pr_matrix;
 	public ViewMatrix vw_matrix;
 	public ModelMatrix ml_matrix;
-
+	public float shineDamper, reflectivity;
+	
 	public ModelShader(String pVertexShader, String pFragmentShader) {
 		super(pVertexShader, pFragmentShader);
 	}
@@ -18,6 +19,8 @@ public class ModelShader extends Shader {
 		this.setUniformMat4f("pr_matrix", pr_matrix);
 		this.setUniformMat4f("vw_matrix", vw_matrix);
 		this.setUniformMat4f("ml_matrix", ml_matrix);
+		this.setUniform("shineDamper", shineDamper);
+		this.setUniform("reflectivity", reflectivity);
 	}
 	
 	public void loadLight(Light light) {

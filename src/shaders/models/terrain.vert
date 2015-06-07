@@ -12,11 +12,14 @@ uniform vec3 lightPos;
 out vec3 vNormal;
 out vec2 vTexCoord;
 out vec3 toLightVector;
+out vec3 toCameraVector;
 
 void main() {
 	vec4 position = vec4(vertex, 1.0) * ml_matrix;
 	gl_Position =  position * vw_matrix * pr_matrix;
-	vNormal = (vec4(normal, 1.0) * ml_matrix).xyz;
+	
 	toLightVector = lightPos - position.xyz;
-	vTexCoord = texCoord;
+	
+	vTexCoord = texCoord*2;
+	vNormal = (vec4(normal, 1.0) * ml_matrix).xyz;
 }

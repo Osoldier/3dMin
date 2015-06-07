@@ -6,6 +6,10 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 import java.nio.*;
 
+import me.soldier.dmin.components.*;
+import me.soldier.dmin.math.*;
+import me.soldier.dmin.shaders.*;
+
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
@@ -18,6 +22,9 @@ public class ToolWindow implements Runnable {
 	private ResizeHandler sizeCallback;
 	private MouseHandler mouseCallback;
 	
+	ComponentShader compShader;
+	
+	private GLButton btn1;
 	public void run() {
 		init();
 		long lastTime = System.nanoTime();
@@ -26,6 +33,9 @@ public class ToolWindow implements Runnable {
 		long timer = System.currentTimeMillis();
 		int updates = 0;
 		int frames = 0;
+		
+		btn1 = new GLButton(new Vector2f(), new Vector2f(10, 10), "res/gold.png");
+		
 		while (Main.running) {
 			long now = System.nanoTime();
 			delta += (now - lastTime) / ns;
@@ -51,7 +61,7 @@ public class ToolWindow implements Runnable {
 	
 	private void render() {
 		glfwSwapBuffers(window);
-		
+		btn1.Render();
 	}
 
 	private void update() {
@@ -68,13 +78,13 @@ public class ToolWindow implements Runnable {
 		
 		// Init window
 		ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-		glfwSetWindowPos(window, (0), (GLFWvidmode.height(vidmode) - height) / 2);
+		glfwSetWindowPos(window, (40), (GLFWvidmode.height(vidmode) - height) / 2);
 
 		glfwSetKeyCallback(window, keyCallback = new Input());
 		glfwSetWindowSizeCallback(window, sizeCallback = new ResizeHandler());
 		glfwSetMouseButtonCallback(window, mouseCallback = new MouseHandler());
 		glfwMakeContextCurrent(window);
-		glfwSwapInterval(2);
+		glfwSwapInterval(4);
 		glfwShowWindow(window);
 
 		GLContext.createFromCurrent();
@@ -85,6 +95,10 @@ public class ToolWindow implements Runnable {
 		glEnable(GL_BLEND);
 		glEnable(GL_TEXTURE_2D);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		
+		ProjectionMatrix pr_matrix = new ProjectionMatrix(0, width, height, 0, -1, 1);
+		compShader = new ComponentShader();
+		compShader.setUniformMat4f("pr_matrix", pr_matrix);
 //		File f = new File("cursor.png");
 //		ByteBuffer image;
 //		try {

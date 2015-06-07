@@ -45,7 +45,7 @@ public class Main implements Runnable {
 	Grid grid;
 	public static Camera camera;
 	public static ProjectionMatrix pr_matrix;
-	public static ModelShader shapeShader;
+	public static ModelShader modelShader;
 	public static GridShader gridShader;
 
 	private void init() {
@@ -63,7 +63,7 @@ public class Main implements Runnable {
 
 		// Init window
 		ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-		glfwSetWindowPos(window, (GLFWvidmode.width(vidmode) - width) / 2, (GLFWvidmode.height(vidmode) - height) / 2);
+		glfwSetWindowPos(window, (GLFWvidmode.width(vidmode) - width) / 2 + 50, (GLFWvidmode.height(vidmode) - height) / 2);
 
 		glfwSetKeyCallback(window, keyCallback = new Input());
 		glfwSetWindowSizeCallback(window, sizeCallback = new ResizeHandler());
@@ -82,17 +82,19 @@ public class Main implements Runnable {
 		glCullFace(GL_BACK);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
+		glEnable(GL_LINE_SMOOTH);
 		glEnable(GL_TEXTURE_2D);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+		glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
 		// init shaders
 		camera = new Camera(0, 0, 0);
-		pr_matrix = new ProjectionMatrix(45, (float)width/(float)height, 0.001f, 200f);
-		shapeShader = new ModelShader("src/shaders/shape.vert", "src/shaders/shape.frag");
-		shapeShader.pr_matrix = pr_matrix;
-		shapeShader.vw_matrix = camera.vw_matrix;
+		pr_matrix = new ProjectionMatrix(45, (float)width/(float)height, 0.001f, 2000f);
+		modelShader = new ModelShader("src/shaders/models/model.vert", "src/shaders/models/model.frag");
+		modelShader.pr_matrix = pr_matrix;
+		modelShader.vw_matrix = camera.vw_matrix;
 
 		gridShader = new GridShader();
 		gridShader.pr_matrix = pr_matrix;
