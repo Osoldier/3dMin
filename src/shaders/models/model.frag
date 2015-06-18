@@ -37,6 +37,8 @@ void main() {
 	else {
 		color = texture(texID, vTexCoord.xy);
 	}
-	
+	if(color.a < 0.5) {
+		discard;
+	}
 	color = vec4(diffuse, 1.0) * color + vec4(finalSpecular, 1.0);
 }

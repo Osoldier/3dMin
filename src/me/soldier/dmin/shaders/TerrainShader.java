@@ -10,7 +10,7 @@ public class TerrainShader extends Shader {
 	public ModelMatrix ml_matrix;
 	
 	public TerrainShader() {
-		super("src/shaders/models/terrain.vert", "src/shaders/models/terrain.frag");
+		super("src/shaders/statics/terrain.vert", "src/shaders/statics/terrain.frag");
 	}
 
 	@Override

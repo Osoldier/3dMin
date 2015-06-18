@@ -23,6 +23,7 @@ public class MasterRenderer {
 	}
 	
 	public void render(Light sun, Camera camera) {
+		
 		shader.start();
 		shader.loadLight(sun);
 		shader.vw_matrix = camera.vw_matrix;
