@@ -2,7 +2,6 @@ package me.soldier.dmin.entities;
 
 import me.soldier.dmin.math.*;
 import me.soldier.dmin.models.*;
-import me.soldier.dmin.rendering.*;
 
 public abstract class Entity{
 	

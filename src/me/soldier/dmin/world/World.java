@@ -1,12 +1,11 @@
 package me.soldier.dmin.world;
 
-import java.util.*;
-
 import me.soldier.dmin.core.*;
 import me.soldier.dmin.entities.*;
 import me.soldier.dmin.math.*;
 import me.soldier.dmin.models.*;
 import me.soldier.dmin.rendering.*;
+import me.soldier.dmin.water.*;
 
 public class World {
 
@@ -21,10 +20,8 @@ public class World {
 		// light
 		light0 = new Light(new Vector3f(0, 5000, 0), new Vector3f(1, 1, 1));
 		renderer.entities.add(new Dragon());
-		renderer.terrains.add(new Terrain(0, 0, new Texture("res/grass.png"), "res/heightmap.png"));
-		renderer.terrains.add(new Terrain(0, -1, new Texture("res/grass.png"), "res/heightmap.png"));
-		renderer.terrains.add(new Terrain(1, 1, new Texture("res/grass.png"), "res/heightmap.png"));
-		renderer.terrains.add(new Terrain(-1, 0, new Texture("res/grass.png"), "res/heightmap.png"));
+		//renderer.terrains.add(new Terrain(0, 0, new Texture("res/grass.png"), "res/heightmap.png"));
+		renderer.waters.add(new WaterTile(10, 10, 10));
 	}
 
 	public void Render() {

@@ -7,7 +7,6 @@ import static org.lwjgl.opengl.GL30.*;
 
 import java.util.*;
 
-import me.soldier.dmin.core.*;
 import me.soldier.dmin.entities.*;
 import me.soldier.dmin.math.*;
 import me.soldier.dmin.shaders.*;

@@ -32,6 +32,13 @@ public class Loader {
 		return vaoID;
 	}
 	
+	public static Model loadToVAO(float[] positions, int dimensions) {
+		int vaoID = createVAO();
+		storeDataInAttributeList(0, dimensions, positions);
+		unbindVAO();
+		return new Model(vaoID, positions.length / dimensions);
+	}
+	
 	private static void storeDataInAttributeList(int attributeNumber, int size, float[] data) {
 		int vboID = glGenBuffers();
 		vbos.add(vboID);

@@ -1,9 +1,6 @@
 package me.soldier.dmin.core;
 
-import java.util.*;
-
 import me.soldier.dmin.math.*;
-import me.soldier.dmin.shaders.*;
 
 /**
  * @author Osoldier
@@ -13,7 +10,6 @@ import me.soldier.dmin.shaders.*;
 public class Camera {
 
 	public ViewMatrix vw_matrix;
-	public ArrayList<Shader> UpdatableShaders = new ArrayList<Shader>();
 	public Vector3f position = null;
 	public float yaw = 0.0f;
 	public float pitch = 0.0f;
@@ -61,8 +57,5 @@ public class Camera {
 	
 	public void lookThrough() {
 		vw_matrix.Transform(position, new Vector3f(pitch, yaw, 0));
-		for(Shader s : UpdatableShaders) {
-			s.setUniformMat4f("vw_matrix", vw_matrix);
-		}
 	}
 }
